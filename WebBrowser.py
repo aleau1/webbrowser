@@ -103,11 +103,14 @@ class OmegaPath(Folder, ComplexFilename):
     def __init__(self, folder, filename):
         Folder.__init__(self, folder)
         ComplexFilename.__init__(self, filename)
-        fullpath = join(self.folder, self.filename)
-        if exists(fullpath):
-            self.__fullpath__ = join(self.folder, self.filename)
-        else:
-            raise FileExistsError(f"{fullpath}")
+        try:
+            fullpath = join(self.folder, self.filename)
+            if exists(fullpath):
+                self.__fullpath__ = join(self.folder, self.filename)
+            else:
+                raise FileExistsError(f"{fullpath}")
+        except:
+            self.__fullpath__ = None
 
     @property
     def path(self):
@@ -122,8 +125,11 @@ class WebBrowser(OmegaPath, DownloadFolder):
     def terminate(self):
         send("alt+f4")
     def browse(self, url:str):
-        self._subprocess = subprocess.Popen(
-            shlex.split(f"'{self.path}' --new-window '{url}'"))
+        try:
+            self._subprocess = subprocess.Popen(
+                shlex.split(f"'{self.path}' --new-window '{url}'"))
+        except:
+            raise AttributeError('This web browser is not installed at specified location. ')
 
 
 
